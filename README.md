@@ -24,19 +24,40 @@ NexusJobs is a full-stack job portal built with a React + Vite frontend and a Sp
 The backend uses MySQL with the following active configuration in `backend/src/main/resources/application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/jobportaldb?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
-spring.datasource.username=root
-spring.datasource.password=<your-mysql-password>
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-server.port=8080
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/jobportaldb?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:root}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:}
+spring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+spring.jpa.show-sql=${SPRING_JPA_SHOW_SQL:true}
+server.port=${PORT:8080}
+app.cors.allowed-origins=${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
 ```
 
-Before starting the backend, make sure MySQL Server is running and update the password in `application.properties` to match your local MySQL account. The database `jobportaldb` will be created automatically if it does not already exist.
+The committed configuration reads these values from environment variables:
+
+```properties
+SPRING_DATASOURCE_URL
+SPRING_DATASOURCE_USERNAME
+SPRING_DATASOURCE_PASSWORD
+SPRING_JPA_HIBERNATE_DDL_AUTO
+SPRING_JPA_SHOW_SQL
+PORT
+APP_CORS_ALLOWED_ORIGINS
+```
+
+Before starting the backend, make sure MySQL Server is running and set `SPRING_DATASOURCE_PASSWORD` to match your local MySQL account. The database `jobportaldb` will be created automatically if it does not already exist.
 
 ## How to Run
 
 ### Backend
+
+Set your MySQL password first:
+
+```powershell
+$env:SPRING_DATASOURCE_PASSWORD="your_mysql_password"
+```
+
+Then start the backend:
 
 ```bash
 cd backend
@@ -62,6 +83,38 @@ The frontend runs on:
 ```text
 http://localhost:5173
 ```
+
+## Render Deployment
+
+This repository includes a `render.yaml` Blueprint and a backend Dockerfile for Render.
+
+Render setup:
+
+1. Push this repository to GitHub.
+2. In Render, create a new Blueprint from this repo.
+3. Render will create:
+   - `nexusjobs-api` as a Docker web service.
+   - `nexusjobs-frontend` as a static site.
+4. Add the required environment variables in the Render dashboard.
+
+Backend service environment variables:
+
+```text
+SPRING_DATASOURCE_URL=jdbc:mysql://<host>:<port>/<database>?useSSL=true&serverTimezone=UTC
+SPRING_DATASOURCE_USERNAME=<mysql-username>
+SPRING_DATASOURCE_PASSWORD=<mysql-password>
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+SPRING_JPA_SHOW_SQL=false
+APP_CORS_ALLOWED_ORIGINS=https://nexusjobs-frontend.onrender.com
+```
+
+Frontend static site environment variable:
+
+```text
+VITE_API_BASE_URL=https://nexusjobs-api.onrender.com
+```
+
+Important: Render does not provide a managed MySQL service in this Blueprint. Use an external MySQL provider and paste its connection details into the backend environment variables.
 
 ## Demo Credentials
 

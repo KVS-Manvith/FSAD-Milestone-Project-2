@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useAuth } from '../AuthContext';
+import api from '../api';
 
 function ApplyModal({ job, onClose }) {
   const { user } = useAuth();
@@ -31,7 +31,7 @@ function ApplyModal({ job, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8080/api/applications', {
+      await api.post('/api/applications', {
         job: { id: job.id },
         employee: { id: user.id },
         ...formData

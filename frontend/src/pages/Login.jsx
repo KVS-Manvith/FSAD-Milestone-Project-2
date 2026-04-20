@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
 function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -27,16 +27,16 @@ function Login() {
         const payload = { email, password, name, role };
         if (role === 'RECRUITER') { payload.companyName = companyName; }
         
-        await axios.post('http://localhost:8080/api/auth/register', payload);
+        await api.post('/api/auth/register', payload);
         
         // Auto-login after registration
-        const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
+        const response = await api.post('/api/auth/login', { email, password });
         login(response.data);
         routeUser(response.data.role);
 
       } else {
         // Handle Login
-        const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
+        const response = await api.post('/api/auth/login', { email, password });
         login(response.data);
         routeUser(response.data.role);
       }

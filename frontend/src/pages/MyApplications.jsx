@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../AuthContext';
+import api from '../api';
 
 function MyApplications() {
   const { user } = useAuth();
@@ -9,7 +9,7 @@ function MyApplications() {
   useEffect(() => {
     const fetchApps = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/applications/employee/${user.id}`);
+        const res = await api.get(`/api/applications/employee/${user.id}`);
         setApplications(res.data);
       } catch (e) { console.error(e) }
     };

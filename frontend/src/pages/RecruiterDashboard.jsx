@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../AuthContext';
 import JobList from '../components/JobList';
 import JobForm from '../components/JobForm';
+import api from '../api';
 
 function RecruiterDashboard() {
   const { user } = useAuth();
@@ -19,7 +19,7 @@ function RecruiterDashboard() {
 
   const fetchMyJobs = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/jobs?recruiterId=${user.id}`);
+      const res = await api.get(`/api/jobs?recruiterId=${user.id}`);
       setMyJobs(res.data);
     } catch(e) {}
   };
@@ -31,7 +31,7 @@ function RecruiterDashboard() {
       let countsMap = {};
       
       for (const job of myJobs) {
-        const res = await axios.get(`http://localhost:8080/api/applications/job/${job.id}`);
+        const res = await api.get(`/api/applications/job/${job.id}`);
         allApps = [...allApps, ...res.data];
         countsMap[job.id] = res.data.length;
       }
@@ -43,7 +43,7 @@ function RecruiterDashboard() {
   useEffect(() => { if (myJobs.length > 0) fetchAllApplicationsForMyJobs(); }, [myJobs]);
 
   const handleDeleteJob = async (id) => {
-    await axios.delete(`http://localhost:8080/api/jobs/${id}`);
+    await api.delete(`/api/jobs/${id}`);
     fetchMyJobs();
     if(selectedJob && selectedJob.id === id) {
       handleBackToJobs();
@@ -51,7 +51,7 @@ function RecruiterDashboard() {
   };
 
   const handleJobCreated = async (jobData) => {
-    await axios.post('http://localhost:8080/api/jobs', { ...jobData, company: user.companyName || jobData.company, recruiter: { id: user.id } });
+    await api.post('/api/jobs', { ...jobData, company: user.companyName || jobData.company, recruiter: { id: user.id } });
     setActiveTab('my-jobs');
     fetchMyJobs();
   };
@@ -68,7 +68,7 @@ function RecruiterDashboard() {
 
   const handleUpdateStatus = async (appId, newStatus) => {
     try {
-      await axios.put(`http://localhost:8080/api/applications/${appId}/status`, { status: newStatus });
+      await api.put(`/api/applications/${appId}/status`, { status: newStatus });
       setApplications(applications.map(app => app.id === appId ? { ...app, status: newStatus } : app));
     } catch (e) {
       console.error("Failed to update status", e);

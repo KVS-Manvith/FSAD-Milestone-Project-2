@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import JobList from '../components/JobList';
+import api from '../api';
 
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('jobs');
@@ -14,11 +14,11 @@ function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const usersRes = await axios.get('http://localhost:8080/api/auth/users');
+      const usersRes = await api.get('/api/auth/users');
       setUsers(usersRes.data);
-      const jobsRes = await axios.get('http://localhost:8080/api/jobs');
+      const jobsRes = await api.get('/api/jobs');
       setJobs(jobsRes.data);
-      const appsRes = await axios.get('http://localhost:8080/api/applications');
+      const appsRes = await api.get('/api/applications');
       setApplications(appsRes.data);
     } catch (e) {
       console.error(e);
@@ -26,7 +26,7 @@ function AdminDashboard() {
   };
 
   const handleDeleteJob = async (id) => {
-    await axios.delete(`http://localhost:8080/api/jobs/${id}`);
+    await api.delete(`/api/jobs/${id}`);
     fetchData();
   };
 

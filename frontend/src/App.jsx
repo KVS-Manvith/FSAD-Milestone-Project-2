@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import JobList from './components/JobList';
@@ -9,6 +8,7 @@ import RecruiterDashboard from './pages/RecruiterDashboard';
 import MyApplications from './pages/MyApplications';
 import ApplyModal from './components/ApplyModal';
 import { useAuth } from './AuthContext';
+import api from './api';
 
 function App() {
   const { user } = useAuth();
@@ -22,7 +22,7 @@ function App() {
   const fetchJobs = async (search = '') => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8080/api/jobs${search ? `?search=${search}` : ''}`);
+      const response = await api.get(`/api/jobs${search ? `?search=${search}` : ''}`);
       setJobs(response.data);
     } catch (error) {
       console.error("Error fetching jobs:", error);
